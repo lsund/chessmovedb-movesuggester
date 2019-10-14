@@ -1,3 +1,5 @@
+package com.github.lsund.chessmovedb_gamesuggester
+
 import scopt.OParser
 
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._

@@ -1,13 +1,14 @@
 package com.github.lsund.chessmovedb_gamesuggester
 
 import scopt.OParser
-
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._
 import org.apache.kafka.clients.producer._
 import java.util.Properties
 import java.util
 
 case class Message(key: String, value: String) {}
+
+case class Turn(number: Int, white: String, black: String) {}
 
 case class CliOptions(
     moves: String = ""
@@ -60,10 +61,23 @@ object Main extends App {
         .text("Moves to base suggestion from")
     )
   }
+
+  def moveListToTurns(moves: Array[String]): Array[Turn] = {
+    moves
+      .grouped(2)
+      .toArray
+      .zip(Stream from 1)
+      .map({
+        case (x: Array[String], y: Int) => Turn(y, x(0), x(1))
+      })
+      .toArray
+  }
+
   OParser.parse(optsparser, args, CliOptions()) match {
     case Some(CliOptions(moves)) =>
       val producer = makeKafkaProducer()
-      val msg = Message("foo", moves.split(" ").asJson.noSpaces)
+      val msg =
+        Message("foo", moveListToTurns(moves.split(" ")).asJson.noSpaces)
       produceMessage(producer, "query", msg)
     case _ => ;
   }

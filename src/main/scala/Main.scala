@@ -11,6 +11,8 @@ import scala.collection.JavaConverters._
 
 case class Turn(number: Int, white: String, black: String) {}
 
+case class Ply(number: Int, color: String, move: String)
+
 case class CliOptions(
     moves: String = ""
 ) {
@@ -106,13 +108,17 @@ object Main extends App {
     )
   }
 
-  def moveListToTurns(moves: Array[String]): Array[Turn] = {
+  def moveListToPlys(moves: Array[String]): Array[Ply] = {
+    val ids = Stream
+      .from(1)
+      .take(moves.length)
+      .foldLeft(List(): List[(String, Int)])(
+        (acc, x) => acc ++ List(("white", x), ("black", x))
+      )
     moves
-      .grouped(2)
-      .toArray
-      .zip(Stream from 1)
+      .zip(ids)
       .map({
-        case (x: Array[String], y: Int) => Turn(y, x(0), x(1))
+        case (move, (color, number)) => Ply(number, color, move)
       })
       .toArray
   }
@@ -123,7 +129,7 @@ object Main extends App {
       produceMessage(
         producer,
         "query",
-        moveListToTurns(moves.split(" ")).asJson.noSpaces
+        moveListToPlys(moves.split(" ")).asJson.noSpaces
       )
     case _ => ;
   }

@@ -53,8 +53,8 @@ object Main extends App {
   val optsparser = {
     import builder._
     OParser.sequence(
-      programName("movesuggester"),
-      head("movesuggester", "1.0.0"),
+      programName("chessmovedb"),
+      head("chessmovedb", "1.0.0"),
       builder
         .opt[String]('m', "moves")
         .action((x, c) => c.copy(moves = x))

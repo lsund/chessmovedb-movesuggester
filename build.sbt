@@ -1,5 +1,5 @@
 scalaVersion := "2.12.10"
-name := "chessmovedb-movesuggester"
+name := "chessmovedb-ui"
 organization := "com.github.lsund"
 version := "1.0.0"
 

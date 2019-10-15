@@ -39,12 +39,13 @@ object SuggestionConsumer extends Runnable {
   override def run {
     try {
       consumer.subscribe(util.Arrays.asList("suggestion"))
-      while (true) {
+      var running = true
+      while (running) {
         val record = consumer.poll(1000).asScala
         for (data <- record.iterator) {
           val message = data.value()
           println("Got message" + message)
-          System.exit(0)
+          running = false
         }
       }
     } catch {

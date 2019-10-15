@@ -6,8 +6,6 @@ import org.apache.kafka.clients.producer._
 import java.util.Properties
 import java.util
 
-case class Message(key: String, value: String) {}
-
 case class Turn(number: Int, white: String, black: String) {}
 
 case class CliOptions(
@@ -35,12 +33,12 @@ object Main extends App {
   def produceMessage(
       producer: KafkaProducer[String, String],
       topic: String,
-      message: Message
+      message: String
   ): Unit = {
-    val record =
-      new ProducerRecord[String, String](topic, message.key, message.value)
     try {
-      producer.send(record)
+      producer.send(
+        new ProducerRecord[String, String](topic, message)
+      )
     } catch {
       case e: Exception => {
         e.printStackTrace()
@@ -76,9 +74,11 @@ object Main extends App {
   OParser.parse(optsparser, args, CliOptions()) match {
     case Some(CliOptions(moves)) =>
       val producer = makeKafkaProducer()
-      val msg =
-        Message("foo", moveListToTurns(moves.split(" ")).asJson.noSpaces)
-      produceMessage(producer, "query", msg)
+      produceMessage(
+        producer,
+        "query",
+        moveListToTurns(moves.split(" ")).asJson.noSpaces
+      )
     case _ => ;
   }
 }

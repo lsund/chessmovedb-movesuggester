@@ -108,10 +108,10 @@ object Main extends App {
     )
   }
 
-  def moveListToPlys(moves: Array[String]): Array[Ply] = {
+  def moveListToPlys(moveString: String): Array[Ply] = {
+    val moves = moveString.split(" ")
     val ids = Stream
       .from(1)
-      .take(moves.length)
       .foldLeft(List(): List[(String, Int)])(
         (acc, x) => acc ++ List(("white", x), ("black", x))
       )
@@ -129,7 +129,7 @@ object Main extends App {
       produceMessage(
         producer,
         "query",
-        moveListToPlys(moves.split(" ")).asJson.noSpaces
+        moveListToPlys(moves).asJson.noSpaces
       )
     case _ => ;
   }
